@@ -9,6 +9,7 @@ import os
 from qfnu_monitor.utils import logger
 from qfnu_monitor.core.qfnu_jwc_gg import QFNUJWCGGMonitor
 from qfnu_monitor.core.qfnu_jwc_tz import QFNUJWCTZMonitor
+from qfnu_monitor.core.qfnu_library_gg import QFNULibraryGGMonitor
 
 
 def main():
@@ -24,6 +25,9 @@ def main():
 
     qfnu_jwc_tz_monitor = QFNUJWCTZMonitor(data_dir=data_dir)
     qfnu_jwc_tz_monitor.run()
+
+    qfnu_library_gg_monitor = QFNULibraryGGMonitor(data_dir=data_dir)
+    qfnu_library_gg_monitor.run()
 
 
 if __name__ == "__main__":
