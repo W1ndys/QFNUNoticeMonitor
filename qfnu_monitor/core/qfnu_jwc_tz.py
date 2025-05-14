@@ -8,7 +8,7 @@ from ..utils import logger
 
 
 class QFNUJWCTZMonitor:
-    def __init__(self, data_dir="../data"):
+    def __init__(self, data_dir="data"):
         self.url = "https://jwc.qfnu.edu.cn/tz_j_.htm"
         self.base_url = "https://jwc.qfnu.edu.cn/"
         self.data_dir = data_dir
