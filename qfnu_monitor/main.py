@@ -12,12 +12,16 @@ from qfnu_monitor.core.qfnu_jwc_tz import QFNUJWCTZMonitor
 
 def main():
     # 确保数据目录存在
-    os.makedirs("data", exist_ok=True)
+    data_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"
+    )
+    print(data_dir)
+    os.makedirs(data_dir, exist_ok=True)
 
-    qfnu_jwc_gg_monitor = QFNUJWCGGMonitor(data_dir="data")
+    qfnu_jwc_gg_monitor = QFNUJWCGGMonitor(data_dir=data_dir)
     qfnu_jwc_gg_monitor.run()
 
-    qfnu_jwc_tz_monitor = QFNUJWCTZMonitor(data_dir="data")
+    qfnu_jwc_tz_monitor = QFNUJWCTZMonitor(data_dir=data_dir)
     qfnu_jwc_tz_monitor.run()
 
 
