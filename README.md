@@ -1,2 +1,80 @@
-# QFNUNoticeMonitor
-曲阜师范大学各种公告监控，推送到飞书群
+# 曲阜师范大学教务处公告监控
+
+一个用于监控曲阜师范大学教务处公告的爬虫程序，并通过飞书机器人推送新公告。
+
+## 功能
+
+- 定时爬取曲阜师范大学教务处公告
+- 自动检测新公告并通过飞书机器人推送消息
+- 支持自定义监控间隔时间
+- 支持单次运行模式
+
+## 目录结构
+
+```
+QFNUNoticeMonitor/
+├── qfnu_monitor/             # 主包目录
+│   ├── __init__.py
+│   ├── core/                 # 核心功能模块
+│   │   ├── __init__.py
+│   │   └── qfnu_jwc.py       # 教务处公告监控实现
+│   ├── utils/                # 工具模块
+│   │   ├── __init__.py
+│   │   ├── logger.py         # 日志工具
+│   │   └── feishu.py         # 飞书机器人消息推送
+│   ├── data/                 # 数据存储目录
+│   └── main.py               # 主程序逻辑
+├── run.py                    # 入口文件
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+## 环境变量配置
+
+在项目根目录创建 `.env` 文件，并配置以下环境变量：
+
+```
+FEISHU_BOT_URL=你的飞书机器人webhook地址
+FEISHU_BOT_SECRET=你的飞书机器人安全设置密钥
+```
+
+## 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+## 使用方法
+
+### 基本用法
+
+```bash
+python run.py
+```
+
+### 参数说明
+
+- `--interval`: 监控间隔时间(秒)，默认3600秒
+- `--data-dir`: 数据存储目录，默认为 'data'
+- `--once`: 仅运行一次，不循环监控
+
+### 示例
+
+```bash
+# 每小时检查一次（默认）
+python run.py
+
+# 每10分钟检查一次
+python run.py --interval 600
+
+# 仅运行一次
+python run.py --once
+
+# 指定数据目录
+python run.py --data-dir /path/to/data
+```
+
+## 许可证
+
+MIT
