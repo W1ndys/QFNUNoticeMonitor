@@ -20,7 +20,7 @@ class QFNUXGTZGGMonitor:
         self.archive_file = os.path.join(
             self.archive_dir, "xg_tzgg_notices_archive.json"
         )
-        self.max_notices = 10  # 最多保留的通知数量
+        self.max_notices = 20  # 最多保留的通知数量
 
     def get_html(self):
         response = requests.get(self.url)
