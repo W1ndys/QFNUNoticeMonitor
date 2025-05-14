@@ -7,7 +7,7 @@ from ..utils.feishu import feishu
 from ..utils import logger
 
 
-class QFNUJWCMonitor:
+class QFNUJWCGGMonitor:
     def __init__(self, data_dir="../data"):
         self.url = "https://jwc.qfnu.edu.cn/gg_j_.htm"
         self.base_url = "https://jwc.qfnu.edu.cn/"
