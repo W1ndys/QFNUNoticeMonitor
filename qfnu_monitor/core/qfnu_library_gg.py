@@ -50,14 +50,14 @@ class QFNUJWCGGMonitor:
 
     def load_saved_notices(self):
         if not os.path.exists(self.data_file) or os.path.getsize(self.data_file) == 0:
-            logger.info("初始化曲阜师范大学教务处公告记录文件")
+            logger.info("初始化曲阜师范大学图书馆公告记录文件")
             return []
 
         try:
             with open(self.data_file, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"读取曲阜师范大学教务处公告记录失败: {e}")
+            logger.error(f"读取曲阜师范大学图书馆公告记录失败: {e}")
             return []
 
     def load_archived_notices(self):
@@ -72,7 +72,7 @@ class QFNUJWCGGMonitor:
             with open(self.archive_file, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"读取曲阜师范大学教务处公告存档记录失败: {e}")
+            logger.error(f"读取曲阜师范大学图书馆公告存档记录失败: {e}")
             return []
 
     def save_notices(self, notices):
@@ -119,7 +119,7 @@ class QFNUJWCGGMonitor:
         if not new_notices:
             return
 
-        title = f"📢 曲阜师范大学教务处有{len(new_notices)}条新公告"
+        title = f"📢 曲阜师范大学图书馆有{len(new_notices)}条新公告"
         content = ""
 
         for i, notice in enumerate(new_notices, 1):
@@ -158,7 +158,7 @@ class QFNUJWCGGMonitor:
             logger.error(f"监控过程发生错误: {e}")
 
     def run(self):
-        logger.info("开始监控曲阜师范大学教务处公告")
+        logger.info("开始监控曲阜师范大学图书馆公告")
         self.monitor()
 
 
