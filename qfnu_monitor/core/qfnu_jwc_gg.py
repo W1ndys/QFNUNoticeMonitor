@@ -14,7 +14,14 @@ class QFNUJWCGGMonitor:
         self.data_dir = data_dir
         # 确保数据目录存在
         os.makedirs(self.data_dir, exist_ok=True)
+        # 确保归档目录存在
+        self.archive_dir = os.path.join(self.data_dir, "archive")
+        os.makedirs(self.archive_dir, exist_ok=True)
         self.data_file = os.path.join(self.data_dir, "jwc_gg_notices.json")
+        self.archive_file = os.path.join(
+            self.archive_dir, "jwc_gg_notices_archive.json"
+        )
+        self.max_notices = 10  # 最多保留的通知数量
 
     def get_html(self):
         response = requests.get(self.url)
@@ -53,9 +60,45 @@ class QFNUJWCGGMonitor:
             logger.error(f"读取曲阜师范大学教务处公告记录失败: {e}")
             return []
 
+    def load_archived_notices(self):
+        """加载已存档的公告"""
+        if (
+            not os.path.exists(self.archive_file)
+            or os.path.getsize(self.archive_file) == 0
+        ):
+            return []
+
+        try:
+            with open(self.archive_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"读取曲阜师范大学教务处公告存档记录失败: {e}")
+            return []
+
     def save_notices(self, notices):
+        """只保存最新的max_notices条公告"""
+        latest_notices = (
+            notices[-self.max_notices :] if len(notices) > self.max_notices else notices
+        )
         with open(self.data_file, "w", encoding="utf-8") as f:
-            json.dump(notices, f, ensure_ascii=False, indent=2)
+            json.dump(latest_notices, f, ensure_ascii=False, indent=2)
+
+        # 如果有超过max_notices的公告，归档多余的公告
+        if len(notices) > self.max_notices:
+            self.archive_notices(notices[: -self.max_notices])
+
+    def archive_notices(self, notices_to_archive):
+        """将公告存档"""
+        if not notices_to_archive:
+            return
+
+        archived_notices = self.load_archived_notices()
+        all_archived = archived_notices + notices_to_archive
+
+        with open(self.archive_file, "w", encoding="utf-8") as f:
+            json.dump(all_archived, f, ensure_ascii=False, indent=2)
+
+        logger.info(f"已归档{len(notices_to_archive)}条公告到{self.archive_file}")
 
     def append_new_notices(self, new_notices):
         """将新公告添加到已保存的公告列表中"""
