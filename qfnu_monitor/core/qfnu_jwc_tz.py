@@ -57,6 +57,12 @@ class QFNUJWCTZMonitor:
         with open(self.data_file, "w", encoding="utf-8") as f:
             json.dump(notices, f, ensure_ascii=False, indent=2)
 
+    def append_new_notices(self, new_notices):
+        """将新通知添加到已保存的通知列表中"""
+        saved_notices = self.load_saved_notices()
+        all_notices = saved_notices + new_notices
+        self.save_notices(all_notices)
+
     def find_new_notices(self, current_notices, saved_notices):
         if not saved_notices:
             return current_notices
@@ -100,8 +106,8 @@ class QFNUJWCTZMonitor:
             if new_notices:
                 logger.info(f"发现{len(new_notices)}条新通知")
                 self.push_to_feishu(new_notices)
-                # 更新保存的通知
-                self.save_notices(current_notices)
+                # 更新保存的通知，添加新通知而不覆盖已有通知
+                self.append_new_notices(new_notices)
             else:
                 logger.info("没有新通知")
 
