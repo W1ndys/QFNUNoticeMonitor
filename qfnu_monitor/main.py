@@ -6,7 +6,7 @@
 """
 
 import os
-from utils import logger
+from qfnu_monitor.utils import logger
 from qfnu_monitor.core.qfnu_jwc_gg import QFNUJWCGGMonitor
 from qfnu_monitor.core.qfnu_jwc_tz import QFNUJWCTZMonitor
 
