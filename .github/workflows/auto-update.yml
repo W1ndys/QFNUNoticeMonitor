@@ -28,7 +28,7 @@ jobs:
         run: python run.py --once
         env:
           FEISHU_BOT_URL: ${{ secrets.FEISHU_BOT_URL }}
-          FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
+          FEISHU_BOT_SECRET: ${{ secrets.FEISHU_BOT_SECRET }}
 
       - name: 检查变更
         id: check_changes
