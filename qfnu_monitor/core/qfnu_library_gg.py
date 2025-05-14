@@ -2,9 +2,8 @@ import requests
 import json
 import os
 from bs4 import BeautifulSoup
-import time
-from ..utils.feishu import feishu
-from ..utils import logger
+from qfnu_monitor.utils.feishu import feishu
+from qfnu_monitor.utils import logger
 
 
 class QFNUJWCGGMonitor:
