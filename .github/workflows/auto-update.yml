@@ -1,0 +1,48 @@
+name: 数据自动更新
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # 每10分钟运行一次
+  workflow_dispatch: # 允许手动触发
+
+permissions:
+  contents: write # 赋予仓库内容的写权限
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 设置Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 运行脚本
+        run: python run.py --once
+
+      - name: 检查变更
+        id: check_changes
+        run: |
+          git diff --quiet data/ || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: 提交变更
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/
+          git commit -m "自动更新数据 $(date +'%Y-%m-%d %H:%M:%S')"
+
+      - name: 推送变更
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
