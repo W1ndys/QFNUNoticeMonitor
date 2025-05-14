@@ -6,6 +6,7 @@
 """
 
 import os
+from utils import logger
 from qfnu_monitor.core.qfnu_jwc_gg import QFNUJWCGGMonitor
 from qfnu_monitor.core.qfnu_jwc_tz import QFNUJWCTZMonitor
 
@@ -15,7 +16,7 @@ def main():
     data_dir = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"
     )
-    print(data_dir)
+    logger.info(f"数据存储目录：{data_dir}")
     os.makedirs(data_dir, exist_ok=True)
 
     qfnu_jwc_gg_monitor = QFNUJWCGGMonitor(data_dir=data_dir)
