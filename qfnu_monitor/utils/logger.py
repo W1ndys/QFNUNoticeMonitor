@@ -1,5 +1,6 @@
 import logging
 import os
+import datetime
 
 
 def setup_logger(name=None, log_file=None):
@@ -24,7 +25,9 @@ def setup_logger(name=None, log_file=None):
     # 默认日志文件路径
     if log_file is None:
         logs_dir = os.path.join(project_root, "logs")
-        log_file = os.path.join(logs_dir, "monitor.log")
+
+        current_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_file = os.path.join(logs_dir, f"monitor_{current_time}.log")
 
     log_dir = os.path.dirname(log_file)
     if not os.path.exists(log_dir):
