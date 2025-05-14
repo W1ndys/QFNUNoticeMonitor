@@ -15,8 +15,9 @@ def main():
     os.makedirs("data", exist_ok=True)
 
     qfnu_jwc_gg_monitor = QFNUJWCGGMonitor(data_dir="data")
-    qfnu_jwc_tz_monitor = QFNUJWCTZMonitor(data_dir="data")
     qfnu_jwc_gg_monitor.run()
+
+    qfnu_jwc_tz_monitor = QFNUJWCTZMonitor(data_dir="data")
     qfnu_jwc_tz_monitor.run()
 
 
