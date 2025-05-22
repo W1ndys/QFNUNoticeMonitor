@@ -1,6 +1,52 @@
 import logging
 import os
 import datetime
+import glob
+import time
+
+
+def cleanup_old_logs(days=7):
+    """
+    清理指定天数之前的日志文件
+
+    Args:
+        days: 保留的天数，默认7天
+    """
+    try:
+        # 确定项目根目录
+        project_root = os.path.abspath(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir
+            )
+        )
+
+        # 日志目录
+        logs_dir = os.path.join(project_root, "logs")
+        if not os.path.exists(logs_dir):
+            return
+
+        # 当前时间戳
+        current_time = time.time()
+        # 计算days天前的时间戳
+        cutoff_time = current_time - (days * 24 * 60 * 60)
+
+        # 获取所有日志文件
+        log_files = glob.glob(os.path.join(logs_dir, "monitor_*.log"))
+
+        # 遍历日志文件
+        deleted_count = 0
+        for log_file in log_files:
+            file_mod_time = os.path.getmtime(log_file)
+            # 如果文件修改时间早于截止时间，则删除
+            if file_mod_time < cutoff_time:
+                os.remove(log_file)
+                deleted_count += 1
+
+        # 使用基本的logging模块记录，因为此时可能还没有创建logger对象
+        if deleted_count > 0:
+            logging.info(f"已清理 {deleted_count} 个超过 {days} 天的日志文件")
+    except Exception as e:
+        logging.error(f"清理日志文件时出错: {str(e)}")
 
 
 def setup_logger(name=None, log_file=None):
@@ -14,6 +60,9 @@ def setup_logger(name=None, log_file=None):
     Returns:
         配置好的logger对象
     """
+    # 清理旧日志文件
+    cleanup_old_logs()
+
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
