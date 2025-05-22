@@ -46,6 +46,8 @@ def clean_old_logs():
 
         if deleted_count > 0:
             logger.info(f"已清理 {deleted_count} 个7天前的日志文件")
+        else:
+            logger.info("没有清理到7天前的日志文件")
 
     except Exception as e:
         logger.error(f"清理日志文件时出错: {str(e)}")
