@@ -13,7 +13,7 @@ from qfnu_monitor.utils.logger import logger
 
 def clean_old_logs():
     """
-    清理7天前的日志文件
+    清理1天前的日志文件
     """
     try:
         # 获取项目根目录
@@ -24,9 +24,9 @@ def clean_old_logs():
         if not os.path.exists(logs_dir):
             return
 
-        # 计算7天前的日期
+        # 计算1天前的日期
         current_time = datetime.datetime.now()
-        seven_days_ago = current_time - datetime.timedelta(days=7)
+        one_day_ago = current_time - datetime.timedelta(days=1)
 
         # 遍历日志目录中的所有文件
         deleted_count = 0
@@ -39,15 +39,15 @@ def clean_old_logs():
                 os.path.getctime(file_path)
             )
 
-            # 如果文件创建时间早于7天前，则删除
-            if file_creation_time < seven_days_ago:
+            # 如果文件创建时间早于1天前，则删除
+            if file_creation_time < one_day_ago:
                 os.remove(file_path)
                 deleted_count += 1
 
         if deleted_count > 0:
-            logger.info(f"已清理 {deleted_count} 个7天前的日志文件")
+            logger.info(f"已清理 {deleted_count} 个1天前的日志文件")
         else:
-            logger.info("没有清理到7天前的日志文件")
+            logger.info("没有清理到1天前的日志文件")
 
     except Exception as e:
         logger.error(f"清理日志文件时出错: {str(e)}")
