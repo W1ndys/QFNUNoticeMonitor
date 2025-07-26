@@ -8,6 +8,7 @@
 - [曲阜师范大学教务处通知](https://jwc.qfnu.edu.cn/tz_j_.htm)
 - [曲阜师范大学图书馆公告](https://lib.qfnu.edu.cn/ggxw/gg.htm)
 - [曲阜师范大学学工处通知公告](https://xg.qfnu.edu.cn/tzgg.htm)
+- [曲阜师范大学本科招生网招生快讯](https://zsb.qfnu.edu.cn)
 
 ## 功能
 
