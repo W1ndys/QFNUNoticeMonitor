@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-曲阜师范大学教务处公告监控主程序
+曲阜师范大学公告监控主程序
 """
 
 import os
@@ -11,6 +11,7 @@ from qfnu_monitor.core.qfnu_jwc_gg import QFNUJWCGGMonitor
 from qfnu_monitor.core.qfnu_jwc_tz import QFNUJWCTZMonitor
 from qfnu_monitor.core.qfnu_library_gg import QFNULibraryGGMonitor
 from qfnu_monitor.core.qfnu_xg_tzgg import QFNUXGTZGGMonitor
+from qfnu_monitor.core.qfnu_zsb_zskx import QFNUZSBZSKXMonitor
 
 
 def main():
@@ -32,6 +33,9 @@ def main():
 
     qfnu_xg_tzgg_monitor = QFNUXGTZGGMonitor(data_dir=data_dir)
     qfnu_xg_tzgg_monitor.run()
+
+    qfnu_zsb_zskx_monitor = QFNUZSBZSKXMonitor(data_dir=data_dir)
+    qfnu_zsb_zskx_monitor.run()
 
 
 if __name__ == "__main__":
