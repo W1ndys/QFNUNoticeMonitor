@@ -10,7 +10,7 @@ import requests
 import json
 import os
 import logging
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -67,13 +67,17 @@ class OneBotSender:
 
         return headers
 
-    def send_group_message(self, group_id: str, message: str) -> Dict[str, Any]:
+    def send_group_message(
+        self, group_id: str, message: Union[str, List[Dict[str, Any]]]
+    ) -> Dict[str, Any]:
         """
         向指定群组发送消息
 
         Args:
             group_id (str): 群组ID
-            message (str): 要发送的消息内容
+            message (Union[str, List[Dict[str, Any]]]): 要发送的消息内容
+                - 可以是简单字符串（向后兼容）
+                - 也可以是消息段数组，格式如: [{"type": "text", "data": {"text": "内容"}}]
 
         Returns:
             Dict[str, Any]: API响应结果
@@ -84,8 +88,16 @@ class OneBotSender:
         # 构建API端点
         api_url = f"{self.onebot_url.rstrip('/')}/send_group_msg"
 
-        # 构建请求数据
-        data = {"group_id": int(group_id), "message": message}
+        # 处理消息格式
+        if isinstance(message, str):
+            # 字符串格式：转换为消息段格式
+            formatted_message = [{"type": "text", "data": {"text": message}}]
+        else:
+            # 已经是消息段格式
+            formatted_message = message
+
+        # 构建请求数据（group_id 保持字符串格式以匹配示例）
+        data = {"group_id": group_id, "message": formatted_message}
 
         headers = self._build_headers()
 
@@ -96,35 +108,45 @@ class OneBotSender:
 
             result = response.json()
 
-            if response.status_code == 200 and result.get("status") == "ok":
+            if result.get("status") == "ok":
                 logging.info(f"OneBot消息发送成功 - 群组: {group_id}")
                 return result
             else:
                 error_msg = result.get("message", "未知错误")
                 logging.error(
-                    f"OneBot消息发送失败 - 群组: {group_id}, 错误: {error_msg}"
+                    f"OneBot消息发送失败 - 群组: {group_id}, 错误: {error_msg}，响应内容: {result}"
                 )
                 return {"error": error_msg}
 
         except requests.exceptions.RequestException as e:
             error_msg = f"网络请求失败: {str(e)}"
-            logging.error(f"OneBot消息发送失败 - 群组: {group_id}, {error_msg}")
+            logging.error(
+                f"OneBot消息发送失败 - 群组: {group_id}, {error_msg}，响应内容: {result}"
+            )
             return {"error": error_msg}
         except json.JSONDecodeError as e:
             error_msg = f"响应解析失败: {str(e)}"
-            logging.error(f"OneBot消息发送失败 - 群组: {group_id}, {error_msg}")
+            logging.error(
+                f"OneBot消息发送失败 - 群组: {group_id}, {error_msg}，响应内容: {result}"
+            )
             return {"error": error_msg}
         except Exception as e:
             error_msg = f"未知错误: {str(e)}"
-            logging.error(f"OneBot消息发送失败 - 群组: {group_id}, {error_msg}")
+            logging.error(
+                f"OneBot消息发送失败 - 群组: {group_id}, {error_msg}，响应内容: {result}"
+            )
             return {"error": error_msg}
 
-    def send_to_all_groups(self, message: str) -> Dict[str, Any]:
+    def send_to_all_groups(
+        self, message: Union[str, List[Dict[str, Any]]]
+    ) -> Dict[str, Any]:
         """
         向所有配置的群组发送消息
 
         Args:
-            message (str): 要发送的消息内容
+            message (Union[str, List[Dict[str, Any]]]): 要发送的消息内容
+                - 可以是简单字符串（向后兼容）
+                - 也可以是消息段数组，格式如: [{"type": "text", "data": {"text": "内容"}}]
 
         Returns:
             Dict[str, Any]: 发送结果汇总
@@ -160,14 +182,16 @@ class OneBotSender:
         return summary
 
     def send_to_specific_groups(
-        self, group_ids: List[str], message: str
+        self, group_ids: List[str], message: Union[str, List[Dict[str, Any]]]
     ) -> Dict[str, Any]:
         """
         向指定的群组列表发送消息
 
         Args:
             group_ids (List[str]): 群组ID列表
-            message (str): 要发送的消息内容
+            message (Union[str, List[Dict[str, Any]]]): 要发送的消息内容
+                - 可以是简单字符串（向后兼容）
+                - 也可以是消息段数组，格式如: [{"type": "text", "data": {"text": "内容"}}]
 
         Returns:
             Dict[str, Any]: 发送结果汇总
@@ -199,12 +223,14 @@ class OneBotSender:
 
 
 # 便捷函数，保持与feishu模块相似的接口
-def onebot_send_all(message: str) -> Dict[str, Any]:
+def onebot_send_all(message: Union[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
     """
     向所有配置的群组发送消息的便捷函数
 
     Args:
-        message (str): 要发送的消息内容
+        message (Union[str, List[Dict[str, Any]]]): 要发送的消息内容
+            - 可以是简单字符串（向后兼容）
+            - 也可以是消息段数组，格式如: [{"type": "text", "data": {"text": "内容"}}]
 
     Returns:
         Dict[str, Any]: 发送结果
@@ -218,13 +244,17 @@ def onebot_send_all(message: str) -> Dict[str, Any]:
         return {"error": error_msg}
 
 
-def onebot_send_groups(group_ids: List[str], message: str) -> Dict[str, Any]:
+def onebot_send_groups(
+    group_ids: List[str], message: Union[str, List[Dict[str, Any]]]
+) -> Dict[str, Any]:
     """
     向指定群组发送消息的便捷函数
 
     Args:
         group_ids (List[str]): 群组ID列表
-        message (str): 要发送的消息内容
+        message (Union[str, List[Dict[str, Any]]]): 要发送的消息内容
+            - 可以是简单字符串（向后兼容）
+            - 也可以是消息段数组，格式如: [{"type": "text", "data": {"text": "内容"}}]
 
     Returns:
         Dict[str, Any]: 发送结果
