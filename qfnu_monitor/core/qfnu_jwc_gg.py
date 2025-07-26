@@ -3,6 +3,7 @@ import json
 import os
 from bs4 import BeautifulSoup
 from qfnu_monitor.utils.feishu import feishu
+from qfnu_monitor.utils.onebot import onebot_send_all
 from qfnu_monitor.utils import logger
 
 
@@ -128,6 +129,44 @@ class QFNUJWCGGMonitor:
 
         feishu(title, content)
 
+    def push_to_onebot(self, new_notices):
+        """通过OneBot发送新公告通知"""
+        if not new_notices:
+            return
+
+        # 构建消息内容
+        message = f"📢 曲阜师范大学教务处有{len(new_notices)}条新公告\n\n"
+
+        for i, notice in enumerate(new_notices, 1):
+            message += f"【{i}】{notice['title']}\n"
+            message += f"📅 {notice['date']}\n"
+            message += f"🔗 {notice['link']}\n\n"
+
+        # 发送到所有配置的群组
+        result = onebot_send_all(message)
+
+        if "error" in result:
+            logger.error(f"OneBot发送失败: {result['error']}")
+        else:
+            logger.info(f"OneBot发送成功: {result.get('success_count', 0)} 个群组")
+
+    def push_notifications(self, new_notices):
+        """推送通知到所有配置的平台"""
+        if not new_notices:
+            return
+
+        # 推送到飞书
+        try:
+            self.push_to_feishu(new_notices)
+        except Exception as e:
+            logger.error(f"飞书推送失败: {e}")
+
+        # 推送到OneBot群组
+        try:
+            self.push_to_onebot(new_notices)
+        except Exception as e:
+            logger.error(f"OneBot推送失败: {e}")
+
     def monitor(self):
         try:
             # 获取当前公告
@@ -147,7 +186,7 @@ class QFNUJWCGGMonitor:
 
             if new_notices:
                 logger.info(f"发现{len(new_notices)}条新公告")
-                self.push_to_feishu(new_notices)
+                self.push_notifications(new_notices)
                 # 更新保存的公告，添加新公告而不覆盖已有公告
                 self.append_new_notices(new_notices)
             else:
