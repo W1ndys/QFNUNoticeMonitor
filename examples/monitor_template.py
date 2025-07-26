@@ -325,15 +325,25 @@ class WebsiteMonitorTemplate:
 
             # 加载已保存的公告
             saved_notices = self.load_saved_notices()
+            
+            # 检查是否为初始化（第一次运行）
+            is_first_run = not saved_notices
 
             # 查找新公告
             new_notices = self.find_new_notices(current_notices, saved_notices)
 
             if new_notices:
-                logger.info(f"从{self.site_name}发现{len(new_notices)}条新公告")
-                self.push_notifications(new_notices)
-                # 更新保存的公告，添加新公告而不覆盖已有公告
-                self.append_new_notices(new_notices)
+                if is_first_run:
+                    # 第一次运行，只初始化数据，不推送消息
+                    logger.info(f"首次运行{self.site_name}监控器，初始化{len(new_notices)}条公告数据，不推送消息")
+                    # 直接保存所有当前公告作为初始数据
+                    self.save_notices(current_notices)
+                else:
+                    # 非首次运行，正常推送新公告
+                    logger.info(f"从{self.site_name}发现{len(new_notices)}条新公告")
+                    self.push_notifications(new_notices)
+                    # 更新保存的公告，添加新公告而不覆盖已有公告
+                    self.append_new_notices(new_notices)
             else:
                 logger.info(f"{self.site_name}没有新公告")
 
